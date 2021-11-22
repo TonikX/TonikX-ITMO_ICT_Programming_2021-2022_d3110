@@ -1,0 +1,9 @@
+a=input()
+for i in range(len(a)):
+    if ord('a')<=ord(a[i])<=ord('z'):
+        print(chr((ord(a[i])+3-ord('a'))%26+ord('a')),end="")
+    elif ord('A')<=ord(a[i])<=ord('Z'):
+        print(chr((ord(a[i])+3-ord('A'))%26+ord('A')),end="")
+    else:
+        print(a[i],end="")
+
