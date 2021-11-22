@@ -1,0 +1,77 @@
+# -*-coding:utf-8-*-
+# Вирджиния
+
+'''
+fileName : main.py
+'''
+
+#import VigenereEncrypto
+#import VigenereDecrypto
+
+# -*-coding:utf-8-*-
+# Вирджиния без цензуры
+
+'''
+fileName : VigenereDecrypto.py
+'''
+
+
+def VigenereDecrypto(cipher,key):#Расшифровать
+    message = ''
+    non_alpha_count = 0
+    for i in range (len(cipher)):#Траверс
+        if cipher[i].isalpha():
+            if cipher[i].islower():
+                offset = ord(key[(i - non_alpha_count) % len(key)]) - ord('a')
+                message += chr((ord (cipher[i]) - ord('a') - offset) % 26 + ord('a'))
+            else:
+                offset = ord(key[(i - non_alpha_count) % len(key)]) - ord('a')
+                message += chr((ord (cipher[i]) - ord('A') - offset) % 26 + ord('A')+32)
+        else:
+            message += cipher[i]
+            non_alpha_count += 1
+    return message
+
+
+# -*-coding:utf-8-*-
+# Шифрование Вирджинии
+
+'''
+fileName : VigenereEncrypto.py
+'''
+
+
+def VigenereEncrypto(message, key):
+    cipher = ''
+    non_alpha_count = 0
+    for i in range (len(message)):#Траверс
+        if message[i].isalpha():
+            if message[i].islower():
+                offset = ord(key[(i - non_alpha_count) % len(key)]) - ord('a')
+                cipher += chr((ord (message[i]) - ord('a') + offset) % 26 + ord('a')-32)
+            else:
+                offset = ord(key[(i - non_alpha_count) % len(key)]) - ord('a')
+                cipher += chr((ord (message[i]) - ord('A') + offset) % 26 + ord('A'))
+        else:
+            cipher += message[i]
+            non_alpha_count += 1
+    return cipher
+
+
+print(u"Шифрование Вирджинии")
+
+plainText = input("Please input the plainText : ")
+key = input("Please input the key : ")
+
+plainTextToCipherText = VigenereEncrypto(plainText, key)
+print(u"Зашифрованный текст, полученный после шифрования, имеет вид : " + plainTextToCipherText)
+
+print(u"Вирджиния без цензуры")
+
+cipherText =plainTextToCipherText
+#input("Please input the cipherText : ")
+key =key
+#input("Please input the key : ")
+
+cipherTextToPlainText = VigenereDecrypto(cipherText, key)
+print(u"Открытый текст, полученный после дешифрования, имеет вид : " + cipherTextToPlainText)
