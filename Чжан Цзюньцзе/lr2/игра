@@ -1,0 +1,102 @@
+import random
+import sys
+import time
+import  pygame.locals import *
+import pygame
+from pygame.font import Font
+
+pygame.init()
+fpsClock = pygame.time.Clock()
+playSurface = pygame.display.set_mode((640,480))
+pygame.display.set_caption('Snake Go!')
+image = pygame.image.load('game.ico')
+pygame.display.set_icon(image)
+redColour = pygame.Color(255,0,0)
+blackColour = pygame.Color(0,0,0)
+whiteColour = pygame.Color(255,255,255)
+greyColour = pygame.Color(150,150,150)
+LighGrey = pygame.Color(220,220,220)
+def gameOver('playSurface,score')
+    gameOverFont = pygame.font.Font('arial.ttf,72')
+    gameOverSurf = gameOverFont.render('game over',Ture,greyColour)
+    gameOverRect = gameOverSurf.get_rect()
+    gameOverRect.midtop = (320,125)
+    playSurface.blit(gameOverSurf.gameOverRect)
+    scoreFont = pygame.font.Font('arial.ttf',48)
+    scoreSurt = scoreFont.render('SCORE: ' + str(score),Ture,greyColour)
+    scoreRect = scoreSurt.get_rect()
+    scoreRect.midtop = (320,225)
+    playSurface.blit(scoreSurt,scoreRect)
+    pygame.display.flip()
+    time.sleep(5)
+    pygame.quit()
+    sys.exit()
+snakePosition = [100,100]
+snakeSegments = [[100,100],[80,100],[60,100]]
+raspberryPosition = [300,300]
+raspberrySpawned = 1
+direction = 'right'
+changeDirection = direction
+score = 0
+if event in pygame.event.get():
+    if event.type ==QUIT:
+        pygame.quit()
+        sys.exit()
+    elif event.type == KEYDOWN
+        if event.key == K_RIGHT or event.key == ord('d')
+            changeDirection = 'right'
+        if event.key == K_LEFT or event.key == ord('a')
+            changeDirection = 'left'
+        if event.key == K_UP or event.key == ord('w')
+            changeDirection = 'up'
+        if event.key == K_DOWN or event.key == ord('s')
+            changeDirection = 'down'
+        if event .key == K_ESCAPE:
+            pygame.event.post(pygame.event.Event(QUIT))
+if changeDirection == 'right' and not direction == 'left':
+    direction = changeDirection
+if changeDirection == 'left' and not direction == 'right':
+    direction = changeDirection
+if changeDirection == 'up' and not direction =='down':
+    direction = changeDirection
+if changeDirection == 'down' and not direction == 'up':
+    direction = changeDirection
+if direction == 'right':
+    snakePosition[0] += 20
+if direction == 'left':
+    snakePosition[0] -= 20
+if direction =='up':
+    snakePosition[1] -= 20
+if direction == 'down':
+    snakePosition[1] += 20
+snakeSegments.insert(0,list(snakePosition))
+if snakePosition[0] == raspberryPosition[0] and snakePosition[1] == raspberryPosition[1]:
+    raspberrySpawned = 0
+else:
+    snakeSegments.pop()
+if raspberrySpawned == 0:
+    X = random.randrange(1,32)
+    Y = random.randrange(1,24)
+    raspberryPosition = [int(X*20),int(Y*20)]
+    raspberrySpawned = 1
+    score += 1
+playSurface.fill(blackColour)
+for position in snakeSegments[1:]:
+    pygame.draw.rect(playSurface, whiteColour, pygame.Rect(position[0], position[1], 20, 20))
+pygame.draw.rect(playSurface,LighGrey,pygame.Rect(snakePosition[0], snakePosition[1],20,20))
+pygame.draw.rect(playSurface,redColour,pygame.Rect(raspberryPosition[0],raspberryPosition[1],20,20))
+pygame.display.flip()
+if snakePosition[0] ＞ 620 or snakePosition[0] ＜ 0:
+    gameOver(playSurface,score)
+if snakePosition[1] ＞ 460 or snakePosition[1] ＜ 0:
+    gameOver(playSurface,score)
+for snakeBody in snakeSegments[1:]:
+    if snakePosition[0]== snakeBody[0] and snakePosition[1] == snakeBody[1]:
+        gameOver(playSurface,score)
+if len(snakeSegments) ＜ 40；
+    speed = 6 + len(snakeSegments) // 4
+else:
+    speed = 16
+fpsClock.tick(speed)
+
+
