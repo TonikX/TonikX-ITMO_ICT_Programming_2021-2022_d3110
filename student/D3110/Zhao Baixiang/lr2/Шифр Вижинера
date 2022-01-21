@@ -1,0 +1,79 @@
+
+letter_list = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'  # Алфавит
+
+
+# Сгенерировать список ключей на основе введенного ключа
+def Get_KeyList(key):
+    key_list = []
+    for ch in key:
+        key_list.append(ord(ch.upper()) - 65)
+    return key_list
+
+
+# Функция шифрования
+def Encrypt(plaintext, key_list):
+    ciphertext = ""
+    i = 0
+    for ch in plaintext:  # Обойти открытый текст
+        if 0 == i % len(key_list):
+            i = 0
+        if ch.isalpha():  # Является ли открытый текст буквой, если это так, регистр оценивается и шифруется отдельно
+            if ch.isupper():
+                ciphertext += letter_list[(ord(ch) - 65 + key_list[i]) % 26]
+                i += 1
+            else:
+                ciphertext += letter_list[(ord(ch) - 97 + key_list[i]) % 26].lower()
+                i += 1
+        else:  # Если зашифрованный текст не является буквой, добавить его непосредственно в строку зашифрованного текста
+            ciphertext += ch
+    return ciphertext
+
+
+# Функция дешифрования
+def Decrypt(ciphertext, key):
+    plaintext = ""
+
+    i = 0
+    for ch in ciphertext:  # Обход зашифрованного текста
+        if 0 == i % len(key_list):
+            i = 0
+        if ch.isalpha():  # Является ли зашифрованный текст буквой, если это так, регистр разбирается и расшифровывается отдельно
+            if ch.isupper():
+                plaintext += letter_list[(ord(ch) - 65 - key_list[i]) % 26]
+                i += 1
+            else:
+                plaintext += letter_list[(ord(ch) - 97 - key_list[i]) % 26].lower()
+                i += 1
+        else:  # Если зашифрованный текст не является буквой, добавьте его непосредственно в строку открытого текста
+            plaintext += ch
+    return plaintext
+
+
+if __name__ == '__main__':
+    print("Press D for encryption, press E for decryption:")
+    user_input = input()
+    while (user_input != 'D' and user_input != 'E'):  # Введите суждение о законности
+        print("The input is wrong! Please re-enter:")
+        user_input = input()
+
+    print("Please enter the key:")
+    key = input()
+    while (False == key.isalpha()):  # Введите суждение о законности
+        print("The input is wrong! The key is a letter, please re-enter:")
+        key = input()
+
+    key_list = Get_KeyList(key)
+
+    if user_input == 'D':
+        # шифрование
+        print("Please enter plaintext:")
+        plaintext = input()
+
+        ciphertext = Encrypt(plaintext, key_list)
+        print("ciphertext:\n%s" % ciphertext)
+    else:
+        # Расшифровать
+        print("Please enter the ciphertext:")
+        ciphertext = input()
+        plaintext = Decrypt(ciphertext, key_list)
+        print("plaintext:\n%s" % plaintext)

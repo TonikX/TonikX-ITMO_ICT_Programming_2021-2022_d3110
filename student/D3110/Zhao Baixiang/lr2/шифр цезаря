@@ -1,0 +1,42 @@
+
+def getMode():
+    while 1:
+        print('Пожалуйста, выберите режим шифрования или дешифрования:')
+        print('Шифрование:e')
+        print('Расшифровать:d')
+        mode = input()
+        if mode in "e d".split(' ', 1):
+            return mode
+        else:
+            print("пожалуйста, введите еще раз：")
+
+
+def getMessage():
+    print('Пожалуйста, введите строку для шифрования：')
+    return input()
+
+
+def getKey():
+    print("Пожалуйста, введите ключ：")
+    key = int(input())
+    return key
+
+
+def encrypt(mode, message, key):
+    if mode == 'd':
+        key = -key
+    d = {}
+    for c in (65, 97):
+        for i in range(26):
+            d[chr(i + c)] = chr((i + key) % 26 + c)
+    print("Результат：")
+    print("".join([d.get(c, c) for c in message]))
+
+
+mode = getMode()
+message = getMessage()
+key = getKey()
+encrypt(mode, message, key)
+
+
+
