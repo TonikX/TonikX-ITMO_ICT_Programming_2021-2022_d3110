@@ -1,0 +1,36 @@
+import requests
+from bs4 import BeautifulSoup
+from time import sleep
+import pandas as pd
+
+data = []
+for p in range(1, 6):
+
+    url = f'https://www.kinopoisk.ru/lists/movies/top250/?page={p}'
+
+    r = requests.get(url)
+    r.encoding = 'utf8'
+    sleep(3)
+    soup = BeautifulSoup(r.text, 'lxml')
+    films = soup.findAll('div', class_='desktop-rating-selection-file-item')
+
+
+    for film in films:
+        link = 'https://www.kinopoisk.ru' + film.find('a', class_='selection-film-item-meta__link').get('href')
+        russian_name = film.find('a', class_='selection-film-item-meta__link').find('p', class_='selection-film-item-meta__russian_name').text
+        original_name = film.find('a', class_='selection-film-item-meta__link').find('p', class_='selection-film-item-meta__original_name').text
+        country = film.find('a', class_='selection-film-item-meta__link').find('span', class_='selection-film-item-meta__meta-additional-item').text
+        film_type = film.find('a', class_='selection-film-item-meta__link').find('span', class_='selection-film-item-meta__meta-additional-item')[1].text
+        try:
+            rate = film.find('span', class_='rating__value rating__value_positive')
+        except:
+            rate = '-'
+        data.append([link, russian_name, original_name, film_type, rate])
+
+header = ['link', 'russian_name', 'original_name', 'film_type', 'rate']
+df = pd.DataFrame(data, columns=header)
+df.to_csv('kinopoisk_data.csv', sep=';', encoding='utf8')
+
+file = open('zelenaya_milya.txt', 'w')
+file.write(data[0])
+file.close()
