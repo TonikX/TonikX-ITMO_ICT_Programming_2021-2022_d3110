@@ -1,0 +1,168 @@
+{
+ "nbformat": 4,
+ "nbformat_minor": 0,
+ "metadata": {
+  "colab": {
+   "name": "Untitled1.ipynb",
+   "provenance": []
+  },
+  "kernelspec": {
+   "name": "python3",
+   "display_name": "Python 3"
+  },
+  "language_info": {
+   "name": "python"
+  }
+ },
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "id": "XLi9emgRgGkv",
+    "pycharm": {
+     "name": "#%%\n"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "from bs4 import BeautifulSoup\n",
+    "from time import sleep\n",
+    "from tqdm import tqdm\n",
+    "import pandas as pd\n",
+    "import sys"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "!pip install selenium"
+   ],
+   "metadata": {
+    "id": "IQI4l2SRkBqp",
+    "pycharm": {
+     "name": "#%%\n"
+    }
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "from selenium.webdriver\n",
+    "from selenium.webdriver.common.keys import Keys\n",
+    "from selenium.webdriver.support.ui import WebDriverWait as wait\n",
+    "from selenium.webdriver.support import expected_conditions as EC\n",
+    "from selenium.common.exceptions import NoSuchElementException"
+   ],
+   "metadata": {
+    "id": "_Dwe2jQ3kBRO",
+    "pycharm": {
+     "name": "#%%\n"
+    }
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "!apt-get update\n",
+    "!apt install chromium-chromedriver\n",
+    "!cp /usr/lib/chromium-browser/chromedriver /usr/bin"
+   ],
+   "metadata": {
+    "id": "YNn4QilMgp-n",
+    "pycharm": {
+     "name": "#%%\n"
+    }
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "sys.path.insert(0,'/usr/lib/chromium-browser/chromedriver')\n",
+    "from selenium import webdriver\n",
+    "chrome_options = webdriver.ChromeOptions()\n",
+    "chrome_options.add_argument('--headless')\n",
+    "chrome_options.add_argument('--no-sandbox')\n",
+    "chrome_options.add_argument('--disable-dev-shm-usage')\n",
+    "wd = webdriver.Chrome('chromedriver',chrome_options=chrome_options)\n",
+    "wd.get(\"https://www.webite-url.com\")"
+   ],
+   "metadata": {
+    "id": "KOegGzNKgMjm",
+    "pycharm": {
+     "name": "#%%\n"
+    }
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "url = 'https://www.kinopoisk.ru'\n",
+    "browser.get(url)\n",
+    "input_tab = browser.find_element(By.TAG_NAME, \"input\")\n",
+    "input_tab.send_keys('Детектив')\n",
+    "input_tab.send_keys(Keys.ENTER)\n",
+    "sleep(3)\n",
+    "soup = BeautifulSoup(browser.page_source, 'lxml')\n",
+    "films = soup.findAll('div', class_='desktop-rating-selection-file-item')"
+   ],
+   "metadata": {
+    "id": "CCKmXbOcgNje",
+    "pycharm": {
+     "name": "#%%\n"
+    }
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "data = []\n",
+    "for film in films:\n",
+    "    link = 'https://www.kinopoisk.ru' + film.find('a', class_='selection-film-item-meta__link').get('href')\n",
+    "    russian_name = film.find('a', class_='selection-film-item-meta__link').find('p', class_='selection-film-item-meta__russian_name').text\n",
+    "    original_name = film.find('a', class_='selection-film-item-meta__link').find('p', class_='selection-film-item-meta__original_name').text\n",
+    "    country = film.find('a', class_='selection-film-item-meta__link').find('span', class_='selection-film-item-meta__meta-additional-item').text\n",
+    "    film_type = film.find('a', class_='selection-film-item-meta__link').find('span', class_='selection-film-item-meta__meta-additional-item')[1].text\n",
+    "    try:\n",
+    "        rate = film.find('span', class_='rating__value rating__value_positive')\n",
+    "    except:\n",
+    "        rate = '-'\n",
+    "    data.append([link, russian_name, original_name, film_type, rate])"
+   ],
+   "metadata": {
+    "id": "ubLn6I0XgVS2",
+    "pycharm": {
+     "name": "#%%\n"
+    }
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "header = ['link', 'russian_name', 'original_name', 'film_type', 'rate']\n",
+    "df = pd.DataFrame(data, columns=header)\n",
+    "df.to_csv('kinopoisk_selenium.csv', sep=';', encoding='utf8')"
+   ],
+   "metadata": {
+    "id": "XFuIFG4sgXjs",
+    "pycharm": {
+     "name": "#%%\n"
+    }
+   },
+   "execution_count": null,
+   "outputs": []
+  }
+ ]
+}
