@@ -1,0 +1,113 @@
+{
+ "nbformat": 4,
+ "nbformat_minor": 0,
+ "metadata": {
+  "colab": {
+   "name": "Untitled0.ipynb",
+   "provenance": []
+  },
+  "kernelspec": {
+   "name": "python3",
+   "display_name": "Python 3"
+  },
+  "language_info": {
+   "name": "python"
+  }
+ },
+ "cells": [
+  {
+   "cell_type": "code",
+   "source": [
+    "!pip install requests"
+   ],
+   "metadata": {
+    "id": "pwMuWVmFh47d",
+    "pycharm": {
+     "name": "#%%\n"
+    }
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {
+    "id": "1iHqG3IUfnNm",
+    "pycharm": {
+     "name": "#%%\n"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "import requests\n",
+    "from bs4 import BeautifulSoup\n",
+    "from time import sleep\n",
+    "import pandas as pd"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "data = []\n",
+    "for p in range(1, 6):\n",
+    "    url = f'https://www.kinopoisk.ru/lists/movies/top250/?page={p}'\n",
+    "    r = requests.get(url)\n",
+    "    sleep(3)\n",
+    "    soup = BeautifulSoup(r.text, 'lxml')\n",
+    "    films = soup.findAll('div', class_='desktop-rating-selection-file-item')\n",
+    "    for film in films:\n",
+    "        link = 'https://www.kinopoisk.ru' + film.find('a', class_='selection-film-item-meta__link').get('href')\n",
+    "        russian_name = film.find('a', class_='selection-film-item-meta__link').find('p', class_='selection-film-item-meta__russian_name').text\n",
+    "        original_name = film.find('a', class_='selection-film-item-meta__link').find('p', class_='selection-film-item-meta__original_name').text\n",
+    "        country = film.find('a', class_='selection-film-item-meta__link').find('span', class_='selection-film-item-meta__meta-additional-item').text\n",
+    "        film_type = film.find('a', class_='selection-film-item-meta__link').find('span', class_='selection-film-item-meta__meta-additional-item')[1].text\n",
+    "        try:\n",
+    "            rate = film.find('span', class_='rating__value rating__value_positive')\n",
+    "        except:\n",
+    "            rate = '-'\n",
+    "        data.append([link, russian_name, original_name, film_type, rate])"
+   ],
+   "metadata": {
+    "id": "CRyp3ha7fsd3",
+    "pycharm": {
+     "name": "#%%\n"
+    }
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "header = ['link', 'russian_name', 'original_name', 'film_type', 'rate']\n",
+    "df = pd.DataFrame(data, columns=header)\n",
+    "df.to_csv('data.csv', sep=';', encoding='utf8')"
+   ],
+   "metadata": {
+    "id": "ZN-FGeRtfvtj",
+    "pycharm": {
+     "name": "#%%\n"
+    }
+   },
+   "execution_count": null,
+   "outputs": []
+  },
+  {
+   "cell_type": "code",
+   "source": [
+    "file = open('mile.txt', 'w')\n",
+    "file.write(data[0])\n",
+    "file.close()"
+   ],
+   "metadata": {
+    "id": "ZX4HrtVsfxxH",
+    "pycharm": {
+     "name": "#%%\n"
+    }
+   },
+   "execution_count": null,
+   "outputs": []
+  }
+ ]
+}
