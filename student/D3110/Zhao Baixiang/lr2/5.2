@@ -1,0 +1,41 @@
+from selenium.webdriver import Chrome
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait as wait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import NoSuchElementException
+from bs4 import BeautifulSoup
+from time import sleep
+from tqdm import tqdm
+import pandas as pd
+
+browser = Chrome('E:/chromedriver/chromedriver.exe')
+url = 'https://www.kinopoisk.ru'
+browser.get(url)
+
+input_tab = browser.find_element(By.TAG_NAME, "input")
+input_tab.send_keys('Детектив')
+input_tab.send_keys(Keys.ENTER)
+
+sleep(3)
+
+data = []
+soup = BeautifulSoup(browser.page_source, 'lxml')
+films = soup.findAll('div', class_='desktop-rating-selection-file-item')
+
+
+for film in films:
+    link = 'https://www.kinopoisk.ru' + film.find('a', class_='selection-film-item-meta__link').get('href')
+    russian_name = film.find('a', class_='selection-film-item-meta__link').find('p', class_='selection-film-item-meta__russian_name').text
+    original_name = film.find('a', class_='selection-film-item-meta__link').find('p', class_='selection-film-item-meta__original_name').text
+    country = film.find('a', class_='selection-film-item-meta__link').find('span', class_='selection-film-item-meta__meta-additional-item').text
+    film_type = film.find('a', class_='selection-film-item-meta__link').find('span', class_='selection-film-item-meta__meta-additional-item')[1].text
+    try:
+        rate = film.find('span', class_='rating__value rating__value_positive')
+    except:
+        rate = '-'
+    data.append([link, russian_name, original_name, film_type, rate])
+
+header = ['link', 'russian_name', 'original_name', 'film_type', 'rate']
+df = pd.DataFrame(data, columns=header)
+df.to_csv('kinopoisk_selenium.csv', sep=';', encoding='utf8')
+
