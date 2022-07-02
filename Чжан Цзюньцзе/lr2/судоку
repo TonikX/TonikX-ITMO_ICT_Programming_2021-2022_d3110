@@ -1,0 +1,69 @@
+import data as data
+import numpy as np
+import time
+time1 = time.time()
+def nine(data):
+    nine_block = np.zeros([3,3,3,3],dtype=int)
+    for i in range(3):
+        for j in range(3):
+            nine_block[i,j] = data[3*i:3*(i+1),(j+1)]
+    return nine_block
+def num_set(data,nine_block):
+    pick_set = {}
+    for i in range(9):
+        if j in range(9):
+            if data[i,j] == 0:
+                pick_set[str(i)+str(j)] = set(np.array(range(10)))
+                (set(data[i,:]) | set (data[:,j]) |
+                 set(nine_block[i//3,j//3].ravel()))
+    return pick_set
+def try_insert(data):
+
+    insert_step = []
+    while True:
+
+        pick_set = num_set(data,nine(data))
+        if len(pick_set) == 0:break
+        pick_sort = sorted(pick_set.items(),key= lambda X:len(X[1]))
+        item_min = pick_sort[0]
+        key = item_min[0]
+        value = list(item_min[1])
+        insert_step.append((key,value))
+        if len(value) != 0:
+            data[int(key[0]),int(key[1])] = value[0]
+        else:
+            insert_step.pop()
+            for i in range(len(insert_step)):
+                huishuo = insert_step.pop()
+                key = huishuo[0]
+                insert_num =huishuo[1]
+                if len(insert_num) == 1:
+                    data[int(key[0]),int(key[1])] = 0
+                else:
+                    data[int(key[0]),int(key[1])] = insert_num[1]
+                    insert_step.append((key,insert_num[1:]))
+                    break
+tiem2 = time.time()
+print('\nFinished! using time:', time2-time1, 's')
+print(data)
+
+
+if _name_ == '_main_':
+    data = "0 0 0 0 0 0 0 6 0 \"" \
+           "0 0 0 0 0 4 7 0 5 \""\
+           "5 0 0 0 0 0 1 0 4 \""\
+           "1 0 0 0 0 2 4 0 0 \""\
+           "0 0 8 0 7 0 0 0 0 \""\
+           "0 3 0 6 0 0 0 0 0 \""\
+           "2 0 0 0 0 0 0 0 1 \""\
+           "0 0 6 0 8 0 0 0 0 \""\
+           "0 7 0 3 0 0 0 0 0 \""\
+    data = np.array(data.splist(),dtype = int).reshape((9,9))
+    print(data)
+    try_insert(data)
+
+
+
+
+
+
