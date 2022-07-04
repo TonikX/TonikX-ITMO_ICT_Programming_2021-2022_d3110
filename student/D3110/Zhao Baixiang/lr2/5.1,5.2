@@ -1,0 +1,31 @@
+from array import array
+
+import requests
+from bs4 import BeautifulSoup, element
+from time import sleep
+import re
+import pandas as pd
+
+data = []
+url = 'https://www.film.ru/articles/7-novyh-horrorov-kotorye-poraduyut-lyubiteley-zhanra'
+r = requests.get(url)
+r.encoding = 'utf8'
+sleep(3)
+soup = BeautifulSoup(r.text, 'lxml')
+films = soup.findAll('div', class_='card')
+
+for film in films:
+    fields = film.findAll('strong')
+    name = fields[0].find('a').text.rsplit(' ', 1)
+    actors = list()
+    i = fields[4].next_sibling.next_sibling
+    while i != '\n':
+        actors.append(i.text)
+        i = i.next_sibling.next_sibling
+    data.append(['https://www.film.ru' + fields[0].find('a').get('href'), name[0],
+                 name[1].strip('()'), fields[1].text, [i.text for i in fields[2].findAll('a')],
+                 fields[3].next_sibling.next_sibling.text, actors])
+
+header = ['link', 'russian_name', 'year', 'original_name', 'genre', 'director', 'actors']
+df = pd.DataFrame(data, columns=header)
+df.to_csv('data.csv', sep=';', encoding='utf8')
