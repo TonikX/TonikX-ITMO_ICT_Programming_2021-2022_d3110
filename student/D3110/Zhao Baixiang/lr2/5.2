@@ -1,0 +1,38 @@
+from selenium.webdriver import Chrome
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait as wait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import NoSuchElementException
+from bs4 import BeautifulSoup
+from time import sleep
+from tqdm import tqdm
+import pandas as pd
+s = Service('E:/chromedriver/chromedriver.exe')
+browser = Chrome(service=s)
+url = 'https://www.film.ru/articles/7-novyh-horrorov-kotorye-poraduyut-lyubiteley-zhanra'
+browser.get(url)
+
+links = [i.find_element(By.TAG_NAME, 'a').get_attribute('href') for i in browser.find_elements(By.CLASS_NAME, "card")]
+data = [i.text.split('\n') for i in browser.find_elements(By.CLASS_NAME, "card")]
+
+for i in data:
+    temp = list()
+    temp.extend(i[0].rsplit(' ', 1))
+    i[0] = temp[0]
+    i.insert(1, temp[1].strip('()'))
+
+    i[4] = i[4].split(' ', 1)[1]
+    i[5] = i[5].split(' ', 2)[2]
+    if len(i) == 7:
+        i[6] = i[6].split(' ', 1)[1]
+for i in range(len(links)):
+    data[i].append(links[i])
+    if len(data[i]) == 8:
+        data[i][6], data[i][7] = data[i][7], data[i][6]
+
+header = ['russian_name', 'year', 'original_name', 'genre', 'director', 'actors', 'link', 'premiere']
+df = pd.DataFrame(data, columns=header)
+df.to_csv('selenium_data.csv', sep=';', encoding='utf8')
+
